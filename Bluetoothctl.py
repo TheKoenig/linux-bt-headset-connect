@@ -4,20 +4,10 @@ import time
 import pexpect
 import subprocess
 import sys
-import logging
+import utils as utils
 
-
-logger = logging.getLogger("btctl")
-logger.setLevel(logging.DEBUG)
-
-# Enable logging to console
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-logger.addHandler(ch)
-
-# Static
-bose_headset = {'name': "LE-Bose AE2 SoundLink", 'mac_address': "2C:41:A1:FC:7F:5F"}
-
+logger = utils.getLogger()
+bose_headset = utils.getBoseHeadset()
 
 class Bluetoothctl:
     """A wrapper for bluetoothctl utility."""
@@ -181,7 +171,7 @@ class Bluetoothctl:
             return res == 1
 
     def is_paired_with_headset(self):
-        """Returns true if headset is paired (not connected!)"""
+        """Returns true if headset is paired (not connected)"""
         try:
             paired_devices = self.get_paired_devices()
             if len(paired_devices) > 0:
@@ -189,13 +179,13 @@ class Bluetoothctl:
                 for paired_device in paired_devices:
                     if paired_device['name'] == bose_headset['name'] or paired_device['mac_address'] == bose_headset['mac_address']:
                         contains = True
-                        logger.info("Bose headset paired!")
+                        logger.info("Bose headset paired")
                         return True
                 if not contains:
-                    print("Only other devices paired!")
+                    print("Only other devices paired")
                     return False
             else:
-                print("No device paired!")
+                print("No device paired")
                 return False
         except Exception as e:
             logger.error(e)
@@ -212,16 +202,3 @@ class Bluetoothctl:
         except Exception as e:
             logger.error(e)
             return False
-
-if __name__ == "__main__":
-
-    bl = Bluetoothctl()
-
-    while True:
-        is_connected = bl.is_connected_with_headset()
-        if not is_connected:
-            logger.info("Trying to connect to headset!")
-            bl.connect(bose_headset['mac_address'])
-        #else:
-        #    bl.disconnect(bose_headset['mac_address'])
-        time.sleep(5)
