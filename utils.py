@@ -10,6 +10,7 @@ def getLogger():
     if len(logger.handlers) < 1:
         ch = logging.StreamHandler()
         ch.setLevel(logging.DEBUG)
+        ch.setFormatter(logging.Formatter("%(asctime)s - %(message)s"))
         logger.addHandler(ch)
 
     return logger
