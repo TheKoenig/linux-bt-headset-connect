@@ -182,10 +182,10 @@ class Bluetoothctl:
                         logger.info("Bose headset paired")
                         return True
                 if not contains:
-                    print("Only other devices paired")
+                    logger.info("Only other devices paired")
                     return False
             else:
-                print("No device paired")
+                logger.info("No device paired")
                 return False
         except Exception as e:
             logger.error(e)
@@ -196,8 +196,10 @@ class Bluetoothctl:
         try:
             device_info = self.get_device_info(bose_headset['mac_address'])
             if "\tConnected: yes" in device_info:
+                logger.info("Bose headset connected")
                 return True
             else:
+                logger.info("Bose headset not connected")
                 return False
         except Exception as e:
             logger.error(e)
