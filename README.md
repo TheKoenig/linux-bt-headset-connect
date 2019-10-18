@@ -14,6 +14,10 @@ You can call the program via
 
     ./bt-headset-connect.py
 
+If you want the program to run until you manually cancel it, run
+
+    ./bt-headset-connect.py -k True
+
 If you want to have it available everywhere, run
 
     git clone https://github.com/SilverJan/linux-bt-headset-connect.git ~/dev/
