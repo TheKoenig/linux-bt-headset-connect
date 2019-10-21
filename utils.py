@@ -19,3 +19,6 @@ def getLogger():
 def getBoseHeadset():
     bose_headset = {'name': "LE-Bose AE2 SoundLink", 'mac_address': "2C:41:A1:FC:7F:5F"}
     return bose_headset
+
+def replaceColonWithUnderline(str):
+    return str.replace(':', '_')

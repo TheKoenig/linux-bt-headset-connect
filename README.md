@@ -6,6 +6,12 @@ It was developed and optimized for the use of
 * Ubuntu 18.04 (running on a Lenovo T580)
 * Bose SoundLink AE2
 
+## Requirements
+
+See ```requirements.txt``` for list of requirements. Install via
+
+    pip3 install -U --user -r requirements.txt
+
 ## <a name="use">How to use it</a>
 
 ### Calling the program directly
