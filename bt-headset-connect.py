@@ -8,7 +8,6 @@ import pulsectl
 import sys
 
 logger = utils.getLogger()
-bose_headset = utils.getBoseHeadset()
 bl = blctl.Bluetoothctl()
 pulse = pulsectl.Pulse('pulse-bt')
 headset = utils.getHeadsetDetails()
@@ -34,13 +33,17 @@ def isSinkA2dp():
         logger.error("No sinks detected")
         return False
     for sink in sink_list:
+        try:
             if headset["mac_address"] == sink.proplist["device.string"]:
-            if "a2dp" in sink.name:
-                logger.info("Current sink is A2DP sink")
-                return True
-            else:
-                logger.info("Current sink is not A2DP sink: " + sink.name)
-                return False
+                if "a2dp" in sink.name:
+                    logger.info("Current sink is A2DP sink")
+                    return True
+                else:
+                    logger.info("Current sink is not A2DP sink: {}".format(sink.name))
+                    return False
+        except KeyError:
+            logger.warn("Sink does not have property 'device.string': {}".format(str(sink)))
+            continue
     # in case none of the sinks are related to the headset
     return False
 
@@ -53,7 +56,9 @@ def getHeadsetCard():
     for card in card_list:
         if utils.replaceColonWithUnderline(headset["mac_address"]) in card.name:
             return card
-    logger.error("No card found")
+        else:
+            logger.debug("Card name ({}) does not match headset MAC address ({}). Trying next".format(card.name, headset["mac_address"]))
+    logger.error("No card found. Available card names: {}".format(card_list))
     sys.exit(1)    
 
 def changeCardActiveProfileToA2dp(card):
@@ -67,7 +72,7 @@ def changeCardActiveProfileToA2dp(card):
     if card.profile_active == a2dp_profile:
         logger.info("Current card profile is A2DP")
     else:
-        logger.info("Current card profile not A2DP: " + card.profile_active.name)
+        logger.info("Current card profile not A2DP: {}".format(card.profile_active.name))
         logger.info("Trying to change to A2DP profile")
         pulse.card_profile_set(card, a2dp_profile)
 
