@@ -11,6 +11,7 @@ logger = utils.getLogger()
 bose_headset = utils.getBoseHeadset()
 bl = blctl.Bluetoothctl()
 pulse = pulsectl.Pulse('pulse-bt')
+headset = utils.getHeadsetDetails()
 args = None
 
 
@@ -33,7 +34,7 @@ def isSinkA2dp():
         logger.error("No sinks detected")
         return False
     for sink in sink_list:
-        if utils.getBoseHeadset()["mac_address"] == sink.proplist["device.string"]:
+            if headset["mac_address"] == sink.proplist["device.string"]:
             if "a2dp" in sink.name:
                 logger.info("Current sink is A2DP sink")
                 return True
@@ -50,7 +51,7 @@ def getHeadsetCard():
         logger.error("No cards detected")
         sys.exit(1)
     for card in card_list:
-        if utils.replaceColonWithUnderline(utils.getBoseHeadset()["mac_address"]) in card.name:
+        if utils.replaceColonWithUnderline(headset["mac_address"]) in card.name:
             return card
     logger.error("No card found")
     sys.exit(1)    
@@ -76,7 +77,7 @@ def ensureConnected():
     connected = bl.is_connected_with_headset()
     while not connected:
         logger.info("Trying to connect to headset")
-        bl.connect(bose_headset['mac_address'])
+        bl.connect(headset['mac_address'])
         time.sleep(5)
         connected = bl.is_connected_with_headset()
 

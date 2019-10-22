@@ -7,7 +7,7 @@ import sys
 import utils as utils
 
 logger = utils.getLogger()
-bose_headset = utils.getBoseHeadset()
+headset = utils.getHeadsetDetails()
 
 class Bluetoothctl:
     """A wrapper for bluetoothctl utility."""
@@ -177,7 +177,7 @@ class Bluetoothctl:
             if len(paired_devices) > 0:
                 contains = False
                 for paired_device in paired_devices:
-                    if paired_device['name'] == bose_headset['name'] or paired_device['mac_address'] == bose_headset['mac_address']:
+                    if paired_device['name'] == headset['name'] or paired_device['mac_address'] == headset['mac_address']:
                         contains = True
                         logger.info("Bose headset paired")
                         return True
@@ -194,7 +194,7 @@ class Bluetoothctl:
     def is_connected_with_headset(self):
         """Returns true if headset is connected"""
         try:
-            device_info = self.get_device_info(bose_headset['mac_address'])
+            device_info = self.get_device_info(headset['mac_address'])
             if "\tConnected: yes" in device_info:
                 logger.info("Bose headset connected")
                 return True
