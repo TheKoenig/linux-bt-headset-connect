@@ -50,16 +50,19 @@ def isSinkA2dp():
 def getHeadsetCard():
     """Returns sound card which matches with headset description"""
     card_list = pulse.card_list()
-    if len(card_list) < 1:
-        logger.error("No cards detected")
-        sys.exit(1)
-    for card in card_list:
-        if utils.replaceColonWithUnderline(headset["mac_address"]) in card.name:
-            return card
+    card_valid = False
+    while len(card_list) < 1 or not card_valid:
+        if len(card_list) < 1:
+            logger.warn("No cards detected")
         else:
-            logger.debug("Card name ({}) does not match headset MAC address ({}). Trying next".format(card.name, headset["mac_address"]))
-    logger.error("No card found. Available card names: {}".format(card_list))
-    sys.exit(1)    
+            for card in card_list:
+                if utils.replaceColonWithUnderline(headset["mac_address"]) in card.name:
+                    return card
+                else:
+                    logger.debug("Card name ({}) does not match headset MAC address ({}). Trying next".format(card.name, headset["mac_address"]))
+            logger.warn("No card found. Available card names: {}".format(card_list))
+        reconnect()
+        card_list = pulse.card_list()
 
 def changeCardActiveProfileToA2dp(card):
     """Changes active profile of card to A2DP"""
@@ -72,19 +75,38 @@ def changeCardActiveProfileToA2dp(card):
     if card.profile_active == a2dp_profile:
         logger.info("Current card profile is A2DP")
     else:
-        logger.info("Current card profile not A2DP: {}".format(card.profile_active.name))
+        logger.info("Current card profile not A2DP: {}".format(card.profile_active))
         logger.info("Trying to change to A2DP profile")
-        pulse.card_profile_set(card, a2dp_profile)
+        try:
+            pulse.card_profile_set(card, a2dp_profile)
+        except pulsectl.pulsectl.PulseOperationFailed:
+            logger.warning("Got PulseOperationFailed error (most likely because sound settings are screwed up). Reconnecting headset and trying again")
+            reconnect()
 
 def ensureConnected():
     """Checks the connection state to the headset and eventually tries to reconnect"""
     logger.info("Checking if headset is connected")
     connected = bl.is_connected_with_headset()
     while not connected:
-        logger.info("Trying to connect to headset")
-        bl.connect(headset['mac_address'])
-        time.sleep(5)
+        connect()
         connected = bl.is_connected_with_headset()
+
+def connect():
+    """Connects to the device and sleeps for a bit"""
+    logger.info("Trying to connect to headset")
+    bl.connect(headset['mac_address'])
+    time.sleep(5)
+
+def disconnect():
+    """Disconnects from the device and sleeps for a bit"""
+    logger.info("Trying to disconnect to headset")
+    bl.disconnect(headset['mac_address'])
+    time.sleep(5)
+
+def reconnect():
+    """Reconnects to the device"""
+    disconnect()
+    connect()
 
 def ensureA2dp():
     """Checks the card profile state and eventually sets it to A2DP"""

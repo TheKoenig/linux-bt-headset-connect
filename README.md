@@ -33,6 +33,16 @@ If you want to have it available everywhere, run
 
 TBD
 
+## Debugging
+
+Can be one via `pacmd` or `pactl`.
+
+TODO: Find out the difference
+
 ## Sources
 
 The Bluetoothctl class mainly comes from https://gist.github.com/castis/0b7a162995d0b465ba9c84728e60ec01.
+
+## TODOs
+
+[ ] Check for sound output sink (e.g. Speakers / Headphone (in GUI)), see https://askubuntu.com/questions/71863/how-to-change-pulseaudio-sink-with-pacmd-set-default-sink-during-playback/72076#72076
