@@ -17,14 +17,15 @@ args = None
 def handleArguments():
     """Handles CLI arguments and saves them globally"""
     parser = argparse.ArgumentParser(
-        description="A tool which tries to keep a Bluetooth headset connection alive."
+        description="A tool which tries to keep a Bluetooth headset connection alive. Also available: disconnect and version info"
     )
-    parser.add_argument(
-        "--keep_alive", "-k", help="Set a flag whether to keep function alive. Take True/False as value")
+    parser.add_argument("--keep_alive", "-k", help="Set a flag whether to keep function alive. Take True/False as value")
     parser.add_argument("--version", "-v", action="version",
                         version="%(prog)s " + "0.0.1")
+    parser.add_argument("--disconnect", "-d", help="Disconnect device", action="store_true")
     global args
     args = parser.parse_args()
+
 
 def isSinkA2dp():
     """Checks whether current headset sink is A2DP sink"""
@@ -120,13 +121,17 @@ def ensureA2dp():
 
 def main():
     handleArguments()
+    if args.disconnect:
+        ensureConnected()
+        return disconnect()
 
-    ensureConnected()
-    ensureA2dp()
-        
-    if args.keep_alive:
-        time.sleep(10)
-        main()
+    else: 
+        ensureConnected()
+        ensureA2dp()
+            
+        if args.keep_alive:
+            time.sleep(10)
+            main()
 
     logger.info("Device is connected and in A2DP mode. Exiting")
 
