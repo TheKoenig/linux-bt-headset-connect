@@ -122,7 +122,11 @@ def ensureA2dp():
 
 def main():
     handleArguments()
-    if args.disconnect:
+    if args.reconnect:
+        ensureConnected()
+        return reconnect()
+
+    elif args.disconnect:
         ensureConnected()
         return disconnect()
 
