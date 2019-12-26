@@ -23,6 +23,7 @@ def handleArguments():
     parser.add_argument("--version", "-v", action="version",
                         version="%(prog)s " + "0.0.1")
     parser.add_argument("--disconnect", "-d", help="Disconnect device", action="store_true")
+    parser.add_argument("--reconnect", "-r", help="Reconnect device", action="store_true")
     global args
     args = parser.parse_args()
 
@@ -121,7 +122,11 @@ def ensureA2dp():
 
 def main():
     handleArguments()
-    if args.disconnect:
+    if args.reconnect:
+        ensureConnected()
+        return reconnect()
+
+    elif args.disconnect:
         ensureConnected()
         return disconnect()
 
